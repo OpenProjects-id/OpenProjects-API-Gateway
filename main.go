@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"open_projects/handler"
 	"open_projects/user"
@@ -21,6 +22,17 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+
+	userByEmail, err := userRepository.FindByEmail("ssociopath.xyz@gmail.com")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	if userByEmail.ID == 0 {
+		fmt.Println("User Tidak Ditemukan")
+	} else {
+		fmt.Println(userByEmail.Name)
+	}
 
 	userHandler := handler.NewUserHandler(userService)
 
