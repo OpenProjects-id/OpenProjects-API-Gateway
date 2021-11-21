@@ -1,17 +1,25 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"open_projects/auth"
 	"open_projects/handler"
 	"open_projects/user"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 func main() {
-	dsn := "root:12345@tcp(127.0.0.1:3306)/open_projects?charset=utf8mb4&parseTime=True&loc=Local"
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	dsn := os.Getenv("dsn")
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
@@ -20,8 +28,9 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+	authService := auth.NewService()
 
-	userService.SaveAvatar(2, "images/2-profile.png")
+	fmt.Println(authService.GenerateToken(1001))
 
 	userHandler := handler.NewUserHandler(userService)
 
