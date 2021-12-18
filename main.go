@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"open_projects/auth"
 	"open_projects/handler"
 	"open_projects/helper"
+	"open_projects/project"
 	"open_projects/user"
 	"os"
 	"strings"
@@ -30,6 +32,21 @@ func main() {
 	}
 
 	userRepository := user.NewRepository(db)
+	projectRepository := project.NewRepository(db)
+
+	projects, err := projectRepository.FindByUserID(20)
+
+	fmt.Println("Debug")
+	fmt.Println(len(projects))
+	for _, project := range projects {
+		fmt.Println(project.Name)
+		if len(project.ProjectImages) > 0 {
+			fmt.Println("Jumlah Gambar")
+			fmt.Println(len(project.ProjectImages))
+			fmt.Println(project.ProjectImages[0].FileName)
+		}
+	}
+
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
 
