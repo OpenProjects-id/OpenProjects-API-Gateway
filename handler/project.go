@@ -27,6 +27,6 @@ func (h *projectHandler) GetProjects(c *gin.Context) {
 		return
 	}
 
-	response := helper.APIResponse("List of Projects", http.StatusOK, "success", projects)
+	response := helper.APIResponse("List of Projects", http.StatusOK, "success", project.FormatProjects(projects))
 	c.JSON(http.StatusOK, response)
 }
