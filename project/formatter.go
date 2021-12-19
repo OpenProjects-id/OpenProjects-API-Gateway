@@ -8,8 +8,9 @@ type ProjectFormatter struct {
 	Description      string `json:"description"`
 	TechStacks       string `json:"tech_stacks"`
 	ParticipantCount int    `json:"participant_count"`
-	ImageURL         string `json:"image_url"`
 	TotalBudget      int    `json:"total_budget"`
+	ImageURL         string `json:"image_url"`
+	Slug string `json:"slug"`
 }
 
 func FormatProject(project Project) ProjectFormatter {
@@ -23,6 +24,7 @@ func FormatProject(project Project) ProjectFormatter {
 	projectFormatter.ParticipantCount = project.ParticipantCount
 	projectFormatter.TotalBudget = project.TotalBudget
 	projectFormatter.ImageURL = ""
+	projectFormatter.Slug = project.Slug
 
 	if len(project.ProjectImages) > 0 {
 		projectFormatter.ImageURL = project.ProjectImages[0].FileName
