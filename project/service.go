@@ -1,7 +1,7 @@
 package project
 
 type Service interface {
-	FindProjects(userID int) ([]Project, error)
+	GetProjects(userID int) ([]Project, error)
 }
 
 type service struct {
@@ -12,7 +12,7 @@ func NewService(repository Repository) *service {
 	return &service{repository}
 }
 
-func (s *service) FindProjects(userID int) ([]Project, error) {
+func (s *service) GetProjects(userID int) ([]Project, error) {
 	if userID != 0 {
 		projects, err := s.repository.FindByUserID(userID)
 		if err != nil {

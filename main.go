@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"open_projects/auth"
@@ -38,10 +37,8 @@ func main() {
 	projectService := project.NewService(projectRepository)
 	authService := auth.NewService()
 
-	projects, _ := projectService.FindProjects(20)
-	fmt.Println(len(projects))
-
 	userHandler := handler.NewUserHandler(userService, authService)
+	projectHandler := handler.NewProjectHandler(projectService)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
@@ -50,6 +47,8 @@ func main() {
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checkers", userHandler.CheckEmailAvailability)
 	api.POST("/avatars", authMiddleware(authService, userService), userHandler.UploadAvatar)
+
+	api.GET("/projects", projectHandler.GetProjects)
 
 	router.Run()
 }
