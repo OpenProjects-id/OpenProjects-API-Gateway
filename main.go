@@ -34,21 +34,12 @@ func main() {
 	userRepository := user.NewRepository(db)
 	projectRepository := project.NewRepository(db)
 
-	projects, err := projectRepository.FindByUserID(20)
-
-	fmt.Println("Debug")
-	fmt.Println(len(projects))
-	for _, project := range projects {
-		fmt.Println(project.Name)
-		if len(project.ProjectImages) > 0 {
-			fmt.Println("Jumlah Gambar")
-			fmt.Println(len(project.ProjectImages))
-			fmt.Println(project.ProjectImages[0].FileName)
-		}
-	}
-
 	userService := user.NewService(userRepository)
+	projectService := project.NewService(projectRepository)
 	authService := auth.NewService()
+
+	projects, _ := projectService.FindProjects(20)
+	fmt.Println(len(projects))
 
 	userHandler := handler.NewUserHandler(userService, authService)
 
