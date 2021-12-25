@@ -2,6 +2,7 @@ package project
 
 type Service interface {
 	GetProjects(userID int) ([]Project, error)
+	GetProjectByID(input GetProjectDetailInput) (Project, error)
 }
 
 type service struct {
@@ -23,9 +24,19 @@ func (s *service) GetProjects(userID int) ([]Project, error) {
 	}
 
 	projects, err := s.repository.FindAll()
-		if err != nil {
-			return projects, err
-		}
+	if err != nil {
+		return projects, err
+	}
 
-		return projects, nil
+	return projects, nil
+}
+
+func (s *service) GetProjectByID(input GetProjectDetailInput) (Project, error) {
+	project, err := s.repository.FindByID(input.ID)
+
+	if err != nil {
+		return project, err
+	}
+
+	return project, nil
 }

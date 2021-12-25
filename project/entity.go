@@ -1,6 +1,9 @@
 package project
 
-import "time"
+import (
+	"open_projects/user"
+	"time"
+)
 
 type Project struct {
 	ID               int
@@ -15,7 +18,8 @@ type Project struct {
 	Slug             string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
-	ProjectImages []ProjectImage
+	ProjectImages    []ProjectImage
+	User             user.User
 }
 
 type ProjectImage struct {
