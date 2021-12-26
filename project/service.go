@@ -1,8 +1,15 @@
 package project
 
+import (
+	"fmt"
+
+	"github.com/gosimple/slug"
+)
+
 type Service interface {
 	GetProjects(userID int) ([]Project, error)
 	GetProjectByID(input GetProjectDetailInput) (Project, error)
+	CreateProject(input CreateProjectInput) (Project, error)
 }
 
 type service struct {
@@ -39,4 +46,25 @@ func (s *service) GetProjectByID(input GetProjectDetailInput) (Project, error) {
 	}
 
 	return project, nil
+}
+
+func (s *service) CreateProject(input CreateProjectInput) (Project, error) {
+	project := Project{}
+	project.Name = input.Name
+	project.ShortDescription = input.ShortDescription
+	project.Description = input.Description
+	project.TechStacks = input.TechStacks
+	project.TotalBudget = input.TotalBudget
+	project.Perks = input.Perks
+	project.UserID = input.User.ID
+
+	slugCandidate := fmt.Sprintf("%s %d", input.Name, input.User.ID)
+	project.Slug = slug.Make(slugCandidate)
+
+	newProject, err := s.repository.Save(project)
+	if err != nil {
+		return newProject, err
+	}
+
+	return newProject, nil
 }

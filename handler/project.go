@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"open_projects/helper"
 	"open_projects/project"
+	"open_projects/user"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -49,5 +50,33 @@ func (h *projectHandler) GetProject(c *gin.Context) {
 	}
 
 	response := helper.APIResponse("Project Detail", http.StatusOK, "success", project.FormatProjectDetail(projectDetail))
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *projectHandler) CreateProject(c *gin.Context) {
+	var input project.CreateProjectInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed to create campaign", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	currentUser := c.MustGet("currentUser").(user.User)
+
+	input.User = currentUser
+
+	newProject, err := h.service.CreateProject(input)
+	if err != nil {
+		response := helper.APIResponse("Failed to create campaign", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.APIResponse("Success to create campaign", http.StatusOK, "success", project.FormatProject(newProject))
 	c.JSON(http.StatusOK, response)
 }

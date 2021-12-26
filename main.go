@@ -51,6 +51,7 @@ func main() {
 
 	api.GET("/projects", projectHandler.GetProjects)
 	api.GET("/projects/:id", projectHandler.GetProject)
+	api.POST("/projects", authMiddleware(authService, userService), projectHandler.CreateProject)
 
 	router.Run()
 }
