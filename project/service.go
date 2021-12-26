@@ -1,6 +1,7 @@
 package project
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gosimple/slug"
@@ -10,6 +11,7 @@ type Service interface {
 	GetProjects(userID int) ([]Project, error)
 	GetProjectByID(input GetProjectDetailInput) (Project, error)
 	CreateProject(input CreateProjectInput) (Project, error)
+	UpdateProject(inputID GetProjectDetailInput, inputData CreateProjectInput) (Project, error)
 }
 
 type service struct {
@@ -67,4 +69,29 @@ func (s *service) CreateProject(input CreateProjectInput) (Project, error) {
 	}
 
 	return newProject, nil
+}
+
+func (s *service) UpdateProject(inputID GetProjectDetailInput, inputData CreateProjectInput) (Project, error) {
+	project, err := s.repository.FindByID(inputID.ID)
+	if err != nil {
+		return project, err
+	}
+
+	if project.UserID != inputData.User.ID {
+		return project, errors.New("You are not the owner of this project.")
+	}
+
+	project.Name = inputData.Name
+	project.ShortDescription = inputData.ShortDescription
+	project.Description = inputData.Description
+	project.Perks = inputData.Perks
+	project.TotalBudget = inputData.TotalBudget
+	project.TechStacks = inputData.TechStacks
+
+	updatedProject, err := s.repository.Update(project)
+	if err != nil {
+		return updatedProject, err
+	}
+
+	return updatedProject, nil
 }

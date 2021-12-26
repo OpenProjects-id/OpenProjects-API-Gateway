@@ -35,7 +35,7 @@ func (h *projectHandler) GetProjects(c *gin.Context) {
 func (h *projectHandler) GetProject(c *gin.Context) {
 	var input project.GetProjectDetailInput
 
-	err := c.ShouldBindUri((&input))
+	err := c.ShouldBindUri(&input)
 	if err != nil {
 		reponse := helper.APIResponse("Failed to get project's detail", http.StatusBadRequest, "error", nil)
 		c.JSON(http.StatusBadRequest, reponse)
@@ -79,4 +79,42 @@ func (h *projectHandler) CreateProject(c *gin.Context) {
 
 	response := helper.APIResponse("Success to create campaign", http.StatusOK, "success", project.FormatProject(newProject))
 	c.JSON(http.StatusOK, response)
+}
+
+func (h *projectHandler) UpdateProject(c *gin.Context) {
+	var inputID project.GetProjectDetailInput
+
+	err := c.ShouldBindUri(&inputID)
+	if err != nil {
+		reponse := helper.APIResponse("Failed to update campaign", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, reponse)
+		return
+	}
+
+	var inputData project.CreateProjectInput
+
+	err = c.ShouldBindJSON(&inputData)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed to update campaign", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	currentUser := c.MustGet("currentUser").(user.User)
+
+	inputData.User = currentUser
+
+	updatedProject, err := h.service.UpdateProject(inputID, inputData)
+	if err != nil {
+		reponse := helper.APIResponse("Failed to update campaign", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, reponse)
+		return
+	}
+
+	response := helper.APIResponse("Success to update campaign", http.StatusOK, "success", project.FormatProject(updatedProject))
+	c.JSON(http.StatusOK, response)
+
 }

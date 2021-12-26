@@ -7,6 +7,7 @@ type Repository interface {
 	FindByUserID(userID int) ([]Project, error)
 	FindByID(ID int) (Project, error)
 	Save(project Project) (Project, error)
+	Update(project Project) (Project, error)
 }
 
 type repository struct {
@@ -55,6 +56,16 @@ func (r *repository) FindByID(ID int) (Project, error) {
 
 func (r *repository) Save(project Project) (Project, error) {
 	err := r.db.Create(&project).Error
+	if err != nil {
+		return project, err
+	}
+
+	return project, nil
+}
+
+func (r *repository) Update(project Project) (Project, error) {
+	err := r.db.Save(&project).Error
+
 	if err != nil {
 		return project, err
 	}
