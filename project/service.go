@@ -12,6 +12,7 @@ type Service interface {
 	GetProjectByID(input GetProjectDetailInput) (Project, error)
 	CreateProject(input CreateProjectInput) (Project, error)
 	UpdateProject(inputID GetProjectDetailInput, inputData CreateProjectInput) (Project, error)
+	SaveProjectImage(input CreateProjectImageInput, fileLocation string) (ProjectImage, error)
 }
 
 type service struct {
@@ -94,4 +95,26 @@ func (s *service) UpdateProject(inputID GetProjectDetailInput, inputData CreateP
 	}
 
 	return updatedProject, nil
+}
+
+func (s *service) SaveProjectImage(input CreateProjectImageInput, fileLocation string) (ProjectImage, error) {
+	isPrimary := 0
+	if input.IsPrimary {
+		isPrimary = 1
+		_, err := s.repository.MarkAllImagesAsNonoPrimary(input.ProjectID)
+		if err != nil {
+			return ProjectImage{}, err
+		}
+	}
+	projectImage := ProjectImage{}
+	projectImage.ProjectID = input.ProjectID
+	projectImage.IsPrimary = isPrimary
+	projectImage.FileName = fileLocation
+
+	newProjectImage, err := s.repository.CreateImage(projectImage)
+	if err != nil {
+		return newProjectImage, err
+	}
+
+	return newProjectImage, nil
 }

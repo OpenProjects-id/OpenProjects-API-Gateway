@@ -15,3 +15,8 @@ type CreateProjectInput struct {
 	Perks            string `json:"perks" binding:"required"`
 	User             user.User
 }
+
+type CreateProjectImageInput struct {
+	ProjectID int  `form:"project_id" binding:"required"`
+	IsPrimary bool `form:"is_primary" binding:"required"`
+}
