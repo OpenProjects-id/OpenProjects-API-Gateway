@@ -8,6 +8,8 @@ type Repository interface {
 	FindByID(ID int) (Project, error)
 	Save(project Project) (Project, error)
 	Update(project Project) (Project, error)
+	CreateImage(projectImage ProjectImage) (ProjectImage, error)
+	MarkAllImagesAsNonoPrimary(projectID int) (bool, error)
 }
 
 type repository struct {
@@ -71,4 +73,23 @@ func (r *repository) Update(project Project) (Project, error) {
 	}
 
 	return project, nil
+}
+
+func (r *repository) CreateImage(projectImage ProjectImage) (ProjectImage, error) {
+	err := r.db.Create(&projectImage).Error
+	if err != nil {
+		return projectImage, err
+	}
+
+	return projectImage, nil
+}
+
+func (r *repository) MarkAllImagesAsNonoPrimary(projectID int) (bool, error) {
+	err := r.db.Model(&ProjectImage{}).Where("project_id = ?", projectID).Update("is_primary", false).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
