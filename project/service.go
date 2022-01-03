@@ -98,6 +98,15 @@ func (s *service) UpdateProject(inputID GetProjectDetailInput, inputData CreateP
 }
 
 func (s *service) SaveProjectImage(input CreateProjectImageInput, fileLocation string) (ProjectImage, error) {
+	project, err := s.repository.FindByID(input.ProjectID)
+	if err != nil {
+		return ProjectImage{}, err
+	}
+
+	if project.UserID != input.User.ID {
+		return ProjectImage{}, errors.New("You are not the owner of this project.")
+	}
+
 	isPrimary := 0
 	if input.IsPrimary {
 		isPrimary = 1

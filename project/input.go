@@ -18,5 +18,6 @@ type CreateProjectInput struct {
 
 type CreateProjectImageInput struct {
 	ProjectID int  `form:"project_id" binding:"required"`
-	IsPrimary bool `form:"is_primary" binding:"required"`
+	IsPrimary bool `form:"is_primary"`
+	User      user.User
 }

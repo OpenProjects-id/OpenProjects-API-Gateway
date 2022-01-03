@@ -53,6 +53,7 @@ func main() {
 	api.GET("/projects/:id", projectHandler.GetProject)
 	api.POST("/projects", authMiddleware(authService, userService), projectHandler.CreateProject)
 	api.PUT("/projects/:id", authMiddleware(authService, userService), projectHandler.UpdateProject)
+	api.POST("/project-images", authMiddleware(authService, userService), projectHandler.UploadImage)
 
 	router.Run()
 }
