@@ -1,6 +1,9 @@
 package participation
 
-import "time"
+import (
+	"open_projects/user"
+	"time"
+)
 
 type Participation struct {
 	ID        int
@@ -8,6 +11,7 @@ type Participation struct {
 	UserID    int
 	Status    string
 	Code      string
+	User      user.User
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

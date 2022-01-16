@@ -6,7 +6,9 @@ import (
 	"open_projects/auth"
 	"open_projects/handler"
 	"open_projects/helper"
+	"open_projects/participation"
 	"open_projects/project"
+	"open_projects/transaction"
 	"open_projects/user"
 	"os"
 	"strings"
@@ -32,13 +34,19 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	projectRepository := project.NewRepository(db)
+	transactionRepository := transaction.NewRepository(db)
+	participationRepository := participation.NewRepository(db)
 
 	userService := user.NewService(userRepository)
 	projectService := project.NewService(projectRepository)
 	authService := auth.NewService()
+	transactionService := transaction.NewService(transactionRepository, projectRepository)
+	participationService := participation.NewService(participationRepository, projectRepository)
 
 	userHandler := handler.NewUserHandler(userService, authService)
 	projectHandler := handler.NewProjectHandler(projectService)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
+	participationHandler := handler.NewParticipationHandler(participationService)
 
 	router := gin.Default()
 	router.Static("/images", "./images")
@@ -55,6 +63,8 @@ func main() {
 	api.PUT("/projects/:id", authMiddleware(authService, userService), projectHandler.UpdateProject)
 	api.POST("/project-images", authMiddleware(authService, userService), projectHandler.UploadImage)
 
+	api.GET("/projects/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetProjectTransactions)
+	api.GET("/projects/:id/participations", authMiddleware(authService, userService), participationHandler.GetProjectParticipations)
 	router.Run()
 }
 
