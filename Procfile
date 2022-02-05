@@ -1,1 +1,1 @@
-"web: open_projects"
+"web: bin/open_projects"
