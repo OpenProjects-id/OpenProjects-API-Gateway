@@ -12,6 +12,7 @@ type service struct {
 
 type Service interface {
 	GetParticipationsByProjectID(input GetProjectParticipationsInput) ([]Participation, error)
+	GetParticipationsByUserID(userID int) ([]Participation, error)
 }
 
 func NewService(repository Repository, projectRepository project.Repository) *service {
@@ -26,7 +27,7 @@ func (s *service) GetParticipationsByProjectID(input GetProjectParticipationsInp
 	}
 
 	if project.UserID != input.User.ID {
-		return []Participation{}, errors.New("Not an owner of the project")
+		return []Participation{}, errors.New("not an owner of the project")
 	}
 
 	participation, err := s.repository.GetByProjectID(input.ID)
@@ -35,4 +36,12 @@ func (s *service) GetParticipationsByProjectID(input GetProjectParticipationsInp
 	}
 
 	return participation, nil
+}
+
+func (s *service) GetParticipationsByUserID(userID int) ([]Participation, error) {
+	participations, err := s.repository.GetByUserID(userID)
+	if err != nil {
+		return participations, err
+	}
+	return participations, nil
 }

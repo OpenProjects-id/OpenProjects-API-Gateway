@@ -65,6 +65,9 @@ func main() {
 
 	api.GET("/projects/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetProjectTransactions)
 	api.GET("/projects/:id/participations", authMiddleware(authService, userService), participationHandler.GetProjectParticipations)
+
+	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
+	api.GET("/participations", authMiddleware(authService, userService), participationHandler.GetUserParticipations)
 	router.Run()
 }
 

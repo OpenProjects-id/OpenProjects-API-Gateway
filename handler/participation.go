@@ -41,3 +41,18 @@ func (h *participationHandler) GetProjectParticipations(c *gin.Context) {
 	response := helper.APIResponse("Project's participation", http.StatusOK, "success", participation.FormatProjectParticipations(participations))
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *participationHandler) GetUserParticipations(c *gin.Context) {
+	currentUser := c.MustGet("currentUser").(user.User)
+	userID := currentUser.ID
+
+	participations, err := h.service.GetParticipationsByUserID(userID)
+	if err != nil {
+		reponse := helper.APIResponse("Failed to get user's participations", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, reponse)
+		return
+	}
+
+	response := helper.APIResponse("User's participation", http.StatusOK, "success", participation.FormatUserParticipations(participations))
+	c.JSON(http.StatusOK, response)
+}
